@@ -1,0 +1,19 @@
+{
+    "name": "SamTesting",
+    "rootNamespace": "",
+    "references": [
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:fd6b65c47a07493fb6a8662c0938a75b",
+        "GUID:c9be7ce391a041818ca02418de7acd3e",
+        "GUID:2908677d024741d6a8c615ab97c1bcb7"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

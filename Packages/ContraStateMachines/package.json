@@ -1,0 +1,16 @@
+{
+  "name": "software.contraband.statemachines",
+  "version": "1.0.0",
+  "displayName": "State Machines",
+  "description": "Framework for implementing state based design in Unity",
+  "keywords": [
+    "state",
+    "framework"
+  ],
+  "author": {
+    "name": "Jakub Bala",
+    "email": "jakubbalacontraband@gmail.com",
+    "url": "https://www.contraband.software"
+  },
+  "type": "library"
+}

@@ -1,0 +1,14 @@
+{
+    "name": "software.contraband.statemachines",
+    "rootNamespace": "Software.Contraband.StateMachines",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

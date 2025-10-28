@@ -1,0 +1,81 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: wood
+  m_Shader: {fileID: 4800000, guid: 0918cd12140e4df189a812c8ae817912, type: 3}
+  m_Parent: {fileID: 2100000, guid: 71cf22789055f044c97c99340923282d, type: 2}
+  m_ModifiedSerializedProperties: 4
+  m_ValidKeywords:
+  - _ADDITIONAL_LIGHT_SHADOWS
+  - _MAIN_LIGHT_SHADOWS
+  - _MAIN_LIGHT_SHADOWS_CASCADE
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _Color:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _GroundDiffuse:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _GroundNormal:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _DarkRimCutoff: 0.18
+    - _DarkRimDarkness: 0.5
+    - _DarkRimPower: 5
+    - _DarkRimThreshold: 0.2
+    - _EdgeDiffuse: 0.1
+    - _EdgeDistanceAttenuation: 0.184
+    - _EdgeRim: 0.5
+    - _EdgeRimOffset: 0.1
+    - _EdgeSpecular: 0
+    - _EdgeSpecularOffset: 0.035
+    - _Lighting_Factor: 1
+    - _RimBrightness: 0.01
+    - _RimPower: 0.557
+    - _RimSmoothness: 0
+    - _RimThreshold: 0.053
+    - _ShadeLevels: 3
+    - _Shading_Smoothness: 0.5
+    - _Shininess: 32
+    - _Smoothness: 0.5
+    - _TintPower: 0.134
+    m_Colors:
+    - _Albedo: {r: 0.3962264, g: 0.29005173, b: 0.22988608, a: 0}
+    - _Ambient: {r: 0.2246796, g: 0.25867757, b: 0.4811321, a: 1}
+    - _ShadowTint: {r: 0.40398732, g: 0.4033909, b: 0.46226418, a: 0}
+    - _Texture_Scale: {r: 0, g: 0, b: 0, a: 0}
+  m_BuildTextureStacks: []
+--- !u!114 &764998769612191997
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 7

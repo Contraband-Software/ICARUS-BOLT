@@ -1,0 +1,17 @@
+{
+  "name": "software.contraband.control",
+  "version": "1.1.0",
+  "description": "A framework for game backends.",
+  "displayName": "Control",
+  "unity": "2022.3",
+  "type": "framework",
+  "hideInEditor": false,
+  "author": {
+    "name": "Sam Taseff",
+    "email": "sgttaseff1@sheffield.ac.uk",
+    "url": "https://contraband.software/"
+  },
+  "keywords": [
+    "Managers", "Backend", "System"
+  ]
+}

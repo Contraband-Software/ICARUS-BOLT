@@ -1,0 +1,19 @@
+{
+    "name": "Resources.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:fd6b65c47a07493fb6a8662c0938a75b",
+        "GUID:2908677d024741d6a8c615ab97c1bcb7"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

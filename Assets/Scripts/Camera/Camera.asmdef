@@ -1,0 +1,20 @@
+{
+    "name": "Camera",
+    "rootNamespace": "Camera",
+    "references": [
+        "GUID:832e69e63a7f0e7479f2180b0b2f890c",
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:93329ae01917587278298a4f69ffac6e",
+        "GUID:4307f53044263cf4b835bd812fc161a4",
+        "GUID:d2f1a22d59ca37d4f8636f030e0c9e34"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,255 @@
+{
+  "5": {
+    "inputs": {
+      "image": "",
+      "upload": "image"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image"
+    }
+  },
+  "6": {
+    "inputs": {
+      "ckpt_name": "RealVisXL_V5.0_fp16.safetensors"
+    },
+    "class_type": "CheckpointLoaderSimple",
+    "_meta": {
+      "title": "Load Checkpoint"
+    }
+  },
+  "9": {
+    "inputs": {
+      "text": "dirty grimy concrete handpainted large scale wide view, large area expansive large wall dirt in the cracks high res digital art",
+      "clip": [
+        "247",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "10": {
+    "inputs": {
+      "text": "photorealistic",
+      "clip": [
+        "247",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "15": {
+    "inputs": {
+      "seed": 42,
+      "steps": 8,
+      "cfg": 1.5,
+      "sampler_name": "dpmpp_2s_ancestral",
+      "scheduler": "sgm_uniform",
+      "denoise": 1,
+      "model": [
+        "236",
+        0
+      ],
+      "positive": [
+        "202",
+        0
+      ],
+      "negative": [
+        "202",
+        1
+      ],
+      "latent_image": [
+        "16",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "16": {
+    "inputs": {
+      "width": 1024,
+      "height": 1024,
+      "batch_size": 1
+    },
+    "class_type": "EmptyLatentImage",
+    "_meta": {
+      "title": "Empty Latent Image"
+    }
+  },
+  "19": {
+    "inputs": {
+      "samples": [
+        "15",
+        0
+      ],
+      "vae": [
+        "6",
+        2
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "25": {
+    "inputs": {
+      "images": [
+        "19",
+        0
+      ]
+    },
+    "class_type": "SaveImageWebsocket",
+    "_meta": {
+      "title": "SaveImageWebsocket"
+    }
+  },
+  "27": {
+    "inputs": {
+      "image": "",
+      "upload": "image"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image"
+    }
+  },
+  "247": {
+    "inputs": {
+      "stop_at_clip_layer": -1,
+      "clip": [
+        "400",
+        1
+      ]
+    },
+    "class_type": "CLIPSetLastLayer",
+    "_meta": {
+      "title": "CLIP Set Last Layer"
+    }
+  },
+  "235": {
+    "inputs": {
+      "preset": "PLUS (high strength)",
+      "model": [
+        "400",
+        0
+      ]
+    },
+    "class_type": "IPAdapterUnifiedLoader",
+    "_meta": {
+      "title": "IPAdapter Unified Loader"
+    }
+  },
+  "236": {
+    "inputs": {
+      "weight": 0.20000000298023224,
+      "start_at": 0.0,
+      "end_at": 1.0,
+      "weight_type": "style transfer",
+      "model": [
+        "235",
+        0
+      ],
+      "ipadapter": [
+        "235",
+        1
+      ],
+      "image": [
+        "237",
+        0
+      ]
+    },
+    "class_type": "IPAdapter",
+    "_meta": {
+      "title": "IPAdapter"
+    }
+  },
+  "237": {
+    "inputs": {
+      "upload": "image",
+      "image": "C:\\Users\\Julius\\OneDrive\\Desktop\\concretesample.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image"
+    }
+  },
+  "400": {
+    "inputs": {
+      "lora_name": "sdxl_lightning_8step_lora.safetensors",
+      "strength_model": 1.0,
+      "strength_clip": 1.0,
+      "model": [
+        "6",
+        0
+      ],
+      "clip": [
+        "6",
+        1
+      ]
+    },
+    "class_type": "LoraLoader",
+    "_meta": {
+      "title": "Load LoRA 1 (sdxl_lightning_8step)"
+    }
+  },
+  "200": {
+    "inputs": {
+      "image": "C:\\Users\\Julius\\git\\GMTK2024\\Games\\GMTK2024\\Assets\\Textures\\Generated\\Scene\\2025-09-05T20-28-23\\controlnet\\depth\\depth_map00001.png",
+      "upload": "image"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image (depth)"
+    }
+  },
+  "201": {
+    "inputs": {
+      "control_net_name": "controlnet_depth_sdxl.safetensors"
+    },
+    "class_type": "ControlNetLoader",
+    "_meta": {
+      "title": "Load ControlNet (depth)"
+    }
+  },
+  "202": {
+    "inputs": {
+      "strength": 3.0,
+      "start_percent": 0.0,
+      "end_percent": 1.0,
+      "positive": [
+        "9",
+        0
+      ],
+      "negative": [
+        "10",
+        0
+      ],
+      "control_net": [
+        "201",
+        0
+      ],
+      "image": [
+        "200",
+        0
+      ],
+      "vae": [
+        "6",
+        2
+      ]
+    },
+    "class_type": "ControlNetApplyAdvanced",
+    "_meta": {
+      "title": "Apply ControlNet (depth)"
+    }
+  }
+}

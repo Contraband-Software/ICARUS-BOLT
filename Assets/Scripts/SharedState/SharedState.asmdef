@@ -1,0 +1,17 @@
+{
+    "name": "SharedState",
+    "rootNamespace": "SharedState",
+    "references": [
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:19d5ef5ba175b23448c3746df58e4741"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

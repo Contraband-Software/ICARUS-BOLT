@@ -1,0 +1,9 @@
+fileFormatVersion: 2
+guid: 68c45a64a57a54a45b85d84e0b21c9d2
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  userData: '{"shaderPath":"Unlit/grass","attributes":[{"isBaseTexture":true,"channel":4,"index":0,"range":{"x":0.0,"y":1.0},"propertyTarget":"_ControlTex","mask":1}]}'
+  assetBundleName: 
+  assetBundleVariant: 

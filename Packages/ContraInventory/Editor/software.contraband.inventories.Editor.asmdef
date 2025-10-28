@@ -1,0 +1,16 @@
+{
+    "name": "software.contraband.inventories.Editor",
+    "rootNamespace": "Software.Contraband.Inventory",
+    "references": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

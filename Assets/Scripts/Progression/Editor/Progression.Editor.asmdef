@@ -1,0 +1,18 @@
+{
+    "name": "Progression.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:0a63e5dfcaa75af22a9e1ce9c4934caa"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

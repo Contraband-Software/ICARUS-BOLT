@@ -1,0 +1,16 @@
+{
+    "name": "software.contraband.inventories",
+    "rootNamespace": "Software.Contraband.Inventory",
+    "references": [
+        "GUID:495ac3f9a3732b55693697832850c0e3"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

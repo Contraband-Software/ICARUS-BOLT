@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-2347391929881573766
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 7
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: metal 1
+  m_Shader: {fileID: 4800000, guid: 68c45a64a57a54a45b85d84e0b21c9d2, type: 3}
+  m_Parent: {fileID: 2100000, guid: 1df3787f573f41245b3cf2d35abb2afd, type: 2}
+  m_ModifiedSerializedProperties: 2
+  m_ValidKeywords: []
+  m_InvalidKeywords:
+  - _EMISSION
+  m_LightmapFlags: 2
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _GrassMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _GroundDiffuse:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _GroundNormal:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _WindMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - ShadeLevels: 3
+    - _GrassFalloff: 0.05
+    - _GrassThreshold: 0.5
+    - _GustScale: 1
+    - _Metallic: 1
+    - _ScatterStrength: 0.3
+    - _ScatterTintStrength: 0.5
+    - _Timescale: 1
+    - _WindGustiness: 1
+    - _WindStrength: 6
+    m_Colors:
+    - _Ambient: {r: 0.09999997, g: 0.09999997, b: 0.09999997, a: 1}
+    - _BaseColor: {r: 1, g: 0.29797596, b: 0.9950641, a: 1}
+    - _Color: {r: 1, g: 0.29797593, b: 0.9950641, a: 1}
+    - _EmissionColor: {r: 0.9378236, g: 0.3613704, b: 0.5025758, a: 1}
+    - _TipColor: {r: 1, g: 1, b: 1, a: 1}
+    - _WindVelocity: {r: 1, g: 0, b: 0, a: 0}
+  m_BuildTextureStacks: []

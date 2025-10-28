@@ -1,0 +1,123 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aba1fad4676ddaf43af8afcd8350bbe1, type: 3}
+  m_Name: _BaseStats
+  m_EditorClassIdentifier: 
+  values:
+  - stat: 0
+    icon: {fileID: 0}
+    friendlyName: Armour
+    value: 1
+  - stat: 1
+    icon: {fileID: 0}
+    friendlyName: Fuel Efficiency
+    value: 0
+  - stat: 2
+    icon: {fileID: 0}
+    friendlyName: Jump Power
+    value: 30
+  - stat: 3
+    icon: {fileID: 0}
+    friendlyName: Jump Distance
+    value: 0.9
+  - stat: 4
+    icon: {fileID: 0}
+    friendlyName: UNSCALING
+    value: 1.08
+  - stat: 5
+    icon: {fileID: 0}
+    friendlyName: Run Speed
+    value: 8
+  - stat: 6
+    icon: {fileID: 0}
+    friendlyName: UNSCALING
+    value: 4.38
+  - stat: 7
+    icon: {fileID: 0}
+    friendlyName: UNSCALING
+    value: 5.21
+  - stat: 8
+    icon: {fileID: 0}
+    friendlyName: Run Acceleration
+    value: 9.14
+  - stat: 9
+    icon: {fileID: 0}
+    friendlyName: Run Deceleration
+    value: 4.49
+  - stat: 10
+    icon: {fileID: 0}
+    friendlyName: Air Strafing
+    value: 0.05
+  - stat: 11
+    icon: {fileID: 0}
+    friendlyName: Air Braking
+    value: 0.1
+  - stat: 12
+    icon: {fileID: 0}
+    friendlyName: UNSCALING
+    value: 20
+  - stat: 13
+    icon: {fileID: 0}
+    friendlyName: UNSCALING
+    value: 5
+  - stat: 14
+    icon: {fileID: 0}
+    friendlyName: UNSCALING
+    value: 20
+  - stat: 15
+    icon: {fileID: 0}
+    friendlyName: UNSCALING
+    value: 1
+  - stat: 16
+    icon: {fileID: 0}
+    friendlyName: Boost Power
+    value: 24.7
+  - stat: 17
+    icon: {fileID: 0}
+    friendlyName: UNSCALING
+    value: 2
+  - stat: 18
+    icon: {fileID: 0}
+    friendlyName: Increase jetpack mobility
+    value: 3.78
+  - stat: 19
+    icon: {fileID: 0}
+    friendlyName: Increase grappler length
+    value: 1
+  - stat: 20
+    icon: {fileID: 0}
+    friendlyName: UNSCALING
+    value: 2
+  - stat: 21
+    icon: {fileID: 0}
+    friendlyName: UNSCALING
+    value: 2
+  - stat: 22
+    icon: {fileID: 0}
+    friendlyName: UNSCALING
+    value: 2
+  - stat: 23
+    icon: {fileID: 0}
+    friendlyName: UNSCALING
+    value: 2
+  - stat: 24
+    icon: {fileID: 0}
+    friendlyName: UNSCALING
+    value: 27
+  - stat: 25
+    icon: {fileID: 0}
+    friendlyName: UNSCALING
+    value: 1
+  - stat: 26
+    icon: {fileID: 0}
+    friendlyName: Increase jetpack horizontal accelerations
+    value: 1.89
