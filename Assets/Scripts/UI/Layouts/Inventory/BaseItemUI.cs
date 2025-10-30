@@ -16,8 +16,9 @@ using System;
 public class BaseItemUI : MonoBehaviour
 {
     int itemId;  //links to itemId in inventory
-    Image image;
     public RectTransform rectTransform;
+    public Image image_layer1;
+    public Image image_layer2;
     CanvasGroup canvasGroup;
     
     Coroutine returnCoroutine;
@@ -45,13 +46,21 @@ public class BaseItemUI : MonoBehaviour
     {
         Debug.Log("Initialized BaseItemUI of ID: " + itemId);
         this.itemId = itemId;
-        image = GetComponent<Image>();
         UpdateUI();
     }
 
     public virtual void UpdateUI()
     {
-        image.sprite = inSlot.itemHandlerUI.GetStore().GetItemIcon(itemId);
+        Sprite layer1 = inSlot.itemHandlerUI.GetStore().GetItemIconLayer_1(itemId);
+        Sprite layer2 = inSlot.itemHandlerUI.GetStore().GetItemIconLayer_2(itemId);
+
+        image_layer1.sprite = layer1;
+        image_layer2.sprite = layer2;
+
+        Debug.Log("layer1 valid: " + (layer1 != null));
+
+        image_layer1.enabled = image_layer1.sprite != null;
+        image_layer2.enabled = image_layer2.sprite != null;
     }
 
     public void DragStart(Canvas canvas)

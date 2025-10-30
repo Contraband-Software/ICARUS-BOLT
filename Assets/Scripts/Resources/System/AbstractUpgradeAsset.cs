@@ -5,7 +5,8 @@ namespace Resources.System
     public abstract class AbstractUpgradeAsset : ScriptableObject
     {
         [field: SerializeField] public int Id { get; private set; }
-        [field: SerializeField] public Sprite Icon { get; private set; }
+        [field: SerializeField] public Sprite IconLayer_1 { get; private set; }
+        [field: SerializeField] public Sprite IconLayer_2 { get; private set; }
         [field: SerializeField] public string FullName { get; private set; }
         [field: SerializeField] public string FriendlyName { get; private set; }
         [field: SerializeField] public string Tooltip { get; private set; }

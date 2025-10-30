@@ -206,7 +206,11 @@ namespace ProgressionV2
         private AbstractUpgradeAsset GetAssetByItemId(int itemId)
         {
             ItemData itemData = GetItemById(itemId);
-            if (itemData == null) return null;
+            if (itemData == null)
+            {
+                Debug.LogWarning("Unable to fetch asset for itemId: " + itemId);
+                return null;
+            }
 
             switch (itemData)
             {
@@ -218,11 +222,19 @@ namespace ProgressionV2
             }
         }
 
-        public Sprite GetItemIcon(int itemId)
+        public Sprite GetItemIconLayer_1(int itemId)
         {
             AbstractUpgradeAsset asset = GetAssetByItemId(itemId);
             if (asset == null) return null;
-            return asset.Icon;
+            Debug.Log("Getting Item Layer 1. IconLayer_1 null?: " + (asset.IconLayer_1 == null));
+            return asset.IconLayer_1;
+        }
+
+        public Sprite GetItemIconLayer_2(int itemId)
+        {
+            AbstractUpgradeAsset asset = GetAssetByItemId(itemId);
+            if (asset == null) return null;
+            return asset.IconLayer_2;
         }
 
         public ItemData GetItemFromSlot(int slotId)

@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: AccelerationFirmware
   m_EditorClassIdentifier: 
   <Id>k__BackingField: 1
-  <Icon>k__BackingField: {fileID: 21300000, guid: 981f94dd1a57bdf4787642a587ad101c,
-    type: 3}
+  <IconLayer_1>k__BackingField: {fileID: 21300000, guid: 43bd67de54185514b9c1ee1e5cf71093, type: 3}
+  <IconLayer_2>k__BackingField: {fileID: 21300000, guid: 7736c872a2dfed24ca680490269f01c4, type: 3}
   <FullName>k__BackingField: Acceleration Firmware
   <FriendlyName>k__BackingField: Acceleration
   <Tooltip>k__BackingField: Increase run acceleration

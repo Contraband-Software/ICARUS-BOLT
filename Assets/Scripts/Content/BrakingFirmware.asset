@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: BrakingFirmware
   m_EditorClassIdentifier: 
   <Id>k__BackingField: 5
-  <Icon>k__BackingField: {fileID: 21300000, guid: aecf41a648533c947b35fff7dc1df205,
-    type: 3}
+  <IconLayer_1>k__BackingField: {fileID: 21300000, guid: 14764aa4a9180574f9cd1284c7d4e08c, type: 3}
+  <IconLayer_2>k__BackingField: {fileID: 21300000, guid: df5e711a752bb3345917a5e39c25c6bc, type: 3}
   <FullName>k__BackingField: Braking Firmware
   <FriendlyName>k__BackingField: Braking
   <Tooltip>k__BackingField: Increase run deceleration

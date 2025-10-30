@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: RabbitModule
   m_EditorClassIdentifier: 
   <Id>k__BackingField: 5
-  <Icon>k__BackingField: {fileID: 21300000, guid: bb8f5186e16c69b498acabe379971146,
-    type: 3}
+  <IconLayer_1>k__BackingField: {fileID: 21300000, guid: 271f7a4383074e04b9f69151ba3d5af0, type: 3}
+  <IconLayer_2>k__BackingField: {fileID: 0}
   <FullName>k__BackingField: Rabbit Module
   <FriendlyName>k__BackingField: Rabbit
   <Tooltip>k__BackingField: Jump higher, run faster

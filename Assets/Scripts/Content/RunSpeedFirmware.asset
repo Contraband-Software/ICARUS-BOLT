@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: RunSpeedFirmware
   m_EditorClassIdentifier: 
   <Id>k__BackingField: 9
-  <Icon>k__BackingField: {fileID: 21300000, guid: ba800c14526dce645a88d4dd2d456c62,
-    type: 3}
+  <IconLayer_1>k__BackingField: {fileID: 21300000, guid: 8331f2717a829f243aa1f8cc94920586, type: 3}
+  <IconLayer_2>k__BackingField: {fileID: 0}
   <FullName>k__BackingField: Run Speed Firmware
   <FriendlyName>k__BackingField: Run Speed
   <Tooltip>k__BackingField: Increases max run speed
