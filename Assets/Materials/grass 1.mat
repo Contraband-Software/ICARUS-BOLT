@@ -16,7 +16,7 @@ Material:
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 3000
   stringTagMap: {}
   disabledShaderPasses: []
   m_LockedProperties: _BendDelta
@@ -151,7 +151,7 @@ Material:
     - _Metallic: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.005
-    - _PlayerBendFactor: 0.00000091012816
+    - _PlayerBendFactor: 0.016019663
     - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _Scale: 5
@@ -167,7 +167,7 @@ Material:
     - _TessellationGrassDistance: 31.1
     - _Timescale: 80
     - _WindGustiness: 4.22
-    - _WindStrength: 1.2
+    - _WindStrength: 0
     - _WindTurbulence: 1
     - _WorkflowMode: 1
     - _ZWrite: 1
@@ -180,8 +180,8 @@ Material:
     - _BaseColor: {r: 0.4433962, g: 0.29124022, b: 0.24052154, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _PlayerLoc: {r: 33, g: 69.97318, b: 74.380005, a: 0}
-    - _PlayerVel: {r: 2.989659e-21, g: 0.00000091012816, b: 3.0913133e-21, a: 0}
+    - _PlayerLoc: {r: -44.555454, g: 11.080527, b: -18.782446, a: 0}
+    - _PlayerVel: {r: 0.011168138, g: 0.007511832, b: 0.008687615, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _TipColor: {r: 0.8773585, g: 0.44281062, b: 0.3517711, a: 1}
     - _WindVelocity: {r: 0.1, g: 0, b: 0.1, a: 0}
