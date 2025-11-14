@@ -71,6 +71,7 @@ public class DerelictUI : ItemHandlerUI
 
     private void Close()
     {
+        CancelDraggingAction();
         Hide();
     }
 

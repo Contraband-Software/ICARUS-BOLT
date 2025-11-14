@@ -7,19 +7,26 @@ using ProgressionV2;
 using UnityEngine.InputSystem;
 using SharedState;
 using System;
+using UnityEngine.EventSystems;
+using static ItemHandlerUI;
+using System.Reflection;
 
 [
-    RequireComponent(typeof(RectTransform)),
-    RequireComponent(typeof(CanvasGroup)),
-    RequireComponent(typeof(Image))
+    RequireComponent(typeof(RectTransform))
 ]
-public class BaseItemUI : MonoBehaviour
+public class BaseItemUI : MonoBehaviour,
+    IPointerDownHandler,
+    IPointerEnterHandler,
+    IPointerExitHandler,
+    IDragHandler,
+    IEndDragHandler
 {
     int itemId;  //links to itemId in inventory
     public RectTransform rectTransform;
     public Image image_layer1;
     public Image image_layer2;
-    CanvasGroup canvasGroup;
+    public Image itemHitbox;
+    public CanvasGroup itemCanvasGroup;
     
     Coroutine returnCoroutine;
 
@@ -31,7 +38,6 @@ public class BaseItemUI : MonoBehaviour
     private void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
-        canvasGroup = GetComponent<CanvasGroup>();
     }
 
     private void OnEnable()
@@ -57,8 +63,6 @@ public class BaseItemUI : MonoBehaviour
         image_layer1.sprite = layer1;
         image_layer2.sprite = layer2;
 
-        Debug.Log("layer1 valid: " + (layer1 != null));
-
         image_layer1.enabled = image_layer1.sprite != null;
         image_layer2.enabled = image_layer2.sprite != null;
     }
@@ -70,21 +74,18 @@ public class BaseItemUI : MonoBehaviour
 
         UnlockItem(canvas.transform);
 
-        canvasGroup.blocksRaycasts = false;
-        canvasGroup.alpha = 0.7f;
+        itemHitbox.raycastTarget = false;
+        itemCanvasGroup.alpha = 0.7f;
     }
 
     public void DragUpdate(Vector2 screenPosition, Canvas canvas)
     {
-        Debug.Log("Dragging: " + gameObject.name);
-
         if(RectTransformUtility.ScreenPointToLocalPointInRectangle(
             canvas.transform as RectTransform,
             screenPosition,
             null,
             out Vector2 localPos))
         {
-            Debug.Log("Cursor Pos: " + screenPosition + " localPos: " + localPos);
             rectTransform.localPosition = localPos;
         }
     }
@@ -94,14 +95,14 @@ public class BaseItemUI : MonoBehaviour
         if (returnCoroutine != null)
             StopCoroutine(returnCoroutine);
 
-        canvasGroup.alpha = 1f;
+        itemCanvasGroup.alpha = 1f;
         FlyToSlot(originalParent, defaultFlySpeed);
     }
 
     public void DragEnd()
     {
-        canvasGroup.blocksRaycasts = true;
-        canvasGroup.alpha = 1f;
+        itemHitbox.raycastTarget = true;
+        itemCanvasGroup.alpha = 1f;
 
         originalParent = null;
     }
@@ -123,7 +124,7 @@ public class BaseItemUI : MonoBehaviour
 
     private IEnumerator FlyToSlotCoroutine(BaseSlot targetSlot, float speed, Action onComplete)
     {
-        canvasGroup.blocksRaycasts = false;
+        itemCanvasGroup.blocksRaycasts = false;
 
         Vector3 startPos = rectTransform.position;
         Vector3 targetPos = targetSlot.GetCenterWorld();
@@ -161,5 +162,56 @@ public class BaseItemUI : MonoBehaviour
     {
         return itemId;
     }
+
+    #region POINTER_EVENT_HANDLING
+
+    void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
+    {
+    }
+
+    void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
+    {
+    }
+
+    void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
+    {
+        if (inSlot == null) return;
+        if (ItemHandlerUI.HasDraggingItem) return;
+
+        ItemHandlerUI itemHandler = inSlot.itemHandlerUI;
+
+        Debug.Log("Clicked Item Id: " + GetItemId().ToString());
+
+        ItemHandlerUI.DraggingItem = this;
+
+        Canvas dragCanvas = itemHandler.itemHandlerUIElements.dragCanvas
+            ? itemHandler.itemHandlerUIElements.dragCanvas
+            : itemHandler.itemHandlerUIElements.canvas;
+        DragStart(dragCanvas);
+        DragUpdate(eventData.position, dragCanvas);
+    }
+
+    void IDragHandler.OnDrag(PointerEventData eventData)
+    {
+        if (inSlot == null) return;
+        if (ItemHandlerUI.DraggingItem == null) return;
+
+        ItemHandlerUI itemHandler = inSlot.itemHandlerUI;
+
+        Canvas dragCanvas = itemHandler.itemHandlerUIElements.dragCanvas
+            ? itemHandler.itemHandlerUIElements.dragCanvas
+            : itemHandler.itemHandlerUIElements.canvas;
+
+        DraggingItem.DragUpdate(eventData.position, dragCanvas);
+    }
+
+    void IEndDragHandler.OnEndDrag(PointerEventData eventData)
+    {
+        if (inSlot == null) return;
+        if (ItemHandlerUI.DraggingItem == null) return;
+        ItemHandlerUI itemHandler = inSlot.itemHandlerUI;
+        itemHandler.OnDraggingItemReleased(eventData);
+    }
+    #endregion
 
 }

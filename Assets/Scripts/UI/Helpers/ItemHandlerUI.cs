@@ -19,7 +19,8 @@ public abstract class ItemHandlerUI : MonoBehaviour
     [SerializeField] protected GameObject firmwareItemPrefab;
     [SerializeField] protected GameObject moduleItemPrefab;
 
-    protected BaseItemUI draggingItem;
+    public static BaseItemUI DraggingItem;
+    public static bool HasDraggingItem => DraggingItem != null;
 
     [Serializable]
     public class ItemHandlerUIElements
@@ -37,17 +38,14 @@ public abstract class ItemHandlerUI : MonoBehaviour
     /// </summary>
     /// <returns></returns>
     public abstract ItemStore GetStore();
-
     protected virtual void OnEnable()
     {
-        inputEvents.ui.OnClick += HandleClick;
-        inputEvents.ui.OnPoint += HandlePointerMove;
+        gameState.Events.OnPause += CancelDraggingAction;
     }
 
     protected virtual void OnDisable()
     {
-        inputEvents.ui.OnClick -= HandleClick;
-        inputEvents.ui.OnPoint -= HandlePointerMove;
+        gameState.Events.OnPause -= CancelDraggingAction;
     }
 
     protected virtual void Initialize()
@@ -137,106 +135,45 @@ public abstract class ItemHandlerUI : MonoBehaviour
         return null;
     }
 
-    protected void HandleClick(InputAction.CallbackContext context)
+    public void OnDraggingItemReleased(PointerEventData eventData)
     {
-        if (context.performed)
-        {
-            Debug.Log("InventoryUI: Click Start");
-            OnClickStarted(context);
-        }
-        else if (context.canceled)
-        {
-            Debug.Log("InventoryUI: Click Release");
-            OnClickReleased(context);
-        }
-    }
+        if (DraggingItem == null) return;
 
-    protected void OnClickStarted(InputAction.CallbackContext context)
-    {
-        // Raycast UI to see if we clicked an item
-        Vector2 pointer = pointAction.action.ReadValue<Vector2>();
-        var data = new PointerEventData(EventSystem.current) { position = pointer };
-        var results = new List<RaycastResult>();
-        itemHandlerUIElements.raycaster.Raycast(data, results);
-        foreach (var hit in results)
-        {
-            BaseItemUI item = hit.gameObject.GetComponent<BaseItemUI>();
-            if (item != null)
-            {
-                Debug.Log("Clicked Item of id: " + item.GetItemId());
-                draggingItem = item;
+        Debug.Log("POINTER UP");
 
-                Canvas dragCanvas = itemHandlerUIElements.dragCanvas 
-                    ? itemHandlerUIElements.dragCanvas 
-                    : itemHandlerUIElements.canvas;
-                draggingItem.DragStart(dragCanvas);
-                draggingItem.DragUpdate(pointer, dragCanvas);
-                break;
-            }
-        }
-    }
+        var data = new PointerEventData(EventSystem.current) { position = eventData.position };
 
-    protected void HandlePointerMove(InputAction.CallbackContext context)
-    {
-        if (draggingItem == null) return;
-
-        Vector2 pointer = context.ReadValue<Vector2>();
-
-        Debug.Log("ItemHandlerUI HandlePointerMove: " +  pointer);
-        Canvas dragCanvas = itemHandlerUIElements.dragCanvas
-            ? itemHandlerUIElements.dragCanvas
-            : itemHandlerUIElements.canvas;
-
-        draggingItem.DragUpdate(pointer, dragCanvas);
-    }
-
-    protected void OnClickReleased(InputAction.CallbackContext context)
-    {
-        if (draggingItem == null) return;
-
-        // Raycast under mouse
-        Vector2 pointer = pointAction.action.ReadValue<Vector2>();
-        var data = new PointerEventData(EventSystem.current) { position = pointer };
-
-        var results = new List<RaycastResult>();
-
-        // Raycast across all active & enabled canvases
+        // 1. Raycast on ALL canvases
+        List<RaycastResult> hits = new();
         foreach (var handler in FindObjectsOfType<ItemHandlerUI>())
         {
-            Canvas canvas = handler.itemHandlerUIElements.canvas;
-            GraphicRaycaster raycaster = handler.itemHandlerUIElements.raycaster;
+            if (!handler.itemHandlerUIElements.canvas.enabled)
+                continue;
 
-            if (canvas != null && canvas.enabled && canvas.gameObject.activeInHierarchy &&
-                raycaster != null && raycaster.enabled)
-            {
-                raycaster.Raycast(data, results);
-            }
+            handler.itemHandlerUIElements.raycaster.Raycast(data, hits);
         }
-        // Sort hits by visual priority — higher sortingOrder & depth first
-        results.Sort((a, b) =>
-        {
-            int orderCompare = b.sortingOrder.CompareTo(a.sortingOrder);
-            if (orderCompare != 0)
-                return orderCompare;
 
-            // If same sortingOrder, compare by depth
+        // 2. Sort the hits like Unity does (topmost first)
+        hits.Sort((a, b) =>
+        {
+            int order = b.sortingOrder.CompareTo(a.sortingOrder);
+            if (order != 0) return order;
             return b.depth.CompareTo(a.depth);
         });
 
+        // 3. Find the FIRST slot hit
         BaseSlot targetSlot = null;
-
-        foreach (var hit in results)
+        foreach (var hit in hits)
         {
-            // look for Slot on the root object hit
-            targetSlot = hit.gameObject.GetComponent<BaseSlot>();
+            targetSlot = hit.gameObject.GetComponentInParent<BaseSlot>();
             if (targetSlot != null)
                 break;
         }
 
         void FunctionExit()
         {
-            draggingItem.DragCancel();
-            draggingItem = null;
+            DraggingItem.DragCancel();
+            DraggingItem = null;
         }
 
         if (targetSlot == null)
@@ -246,30 +183,25 @@ public abstract class ItemHandlerUI : MonoBehaviour
             return;
         }
 
-        ItemData itemData = draggingItem.inSlot.itemHandlerUI.GetStore().GetItemById(draggingItem.GetItemId());
+        ItemData itemData = DraggingItem.inSlot.itemHandlerUI.GetStore().GetItemById(DraggingItem.GetItemId());
         if (itemData == null)
         {
             FunctionExit();
             return;
         }
 
-        BaseSlot currentSlot = draggingItem.inSlot;
+        BaseSlot currentSlot = DraggingItem.inSlot;
 
-        if (targetSlot.TrySlotItem(
-            draggingItem,
-            itemData,
-            BaseSlot.SlotMode.USER,
-            currentSlot))
-        {
-            // success
-            draggingItem.DragEnd();
-            targetSlot.OnItemSlotted(itemData.itemId);
-        }
-        else
-        {
-            draggingItem.DragCancel();
-        }
 
-        draggingItem = null;
+        targetSlot.HandleItemDrop();
+
+        DraggingItem = null;
+    }
+
+    public void CancelDraggingAction()
+    {
+        if (DraggingItem == null) return;
+        DraggingItem.DragCancel();
+        DraggingItem = null;
     }
 }

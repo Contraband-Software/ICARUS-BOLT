@@ -1,9 +1,11 @@
 using ProgressionV2;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using UnityEngine;
 
-public class BaseSlot : MonoBehaviour
+public class BaseSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField] int slotId;
     public int SlotId => slotId;
@@ -21,11 +23,24 @@ public class BaseSlot : MonoBehaviour
         UPGRADE    // One item must be deleted
     }
 
+    protected enum UI_State
+    {
+        DEFAULT,
+        HOVER
+    }
+
     [SerializeField] public Transform containerRoot;
     [SerializeField] public Transform itemFrame;
     public ItemHandlerUI itemHandlerUI { get; private set; }
 
     public void SetItemHandlerUI(ItemHandlerUI itemHandlerUI) => this.itemHandlerUI = itemHandlerUI;
+
+    UI_State ui_state = UI_State.DEFAULT;
+    private void Start()
+    {
+        ui_state = UI_State.DEFAULT;
+    }
+
 
     public bool IsOccupied() => GetItem() != null;
     protected ItemData GetItem() => itemHandlerUI.GetStore().GetItemFromSlot(slotId);
@@ -34,6 +49,8 @@ public class BaseSlot : MonoBehaviour
     {
         return GetComponentInChildren<BaseItemUI>(includeInactive: false);
     }
+
+    #region SYSTEM
 
     public virtual bool CanSlotItem(ItemData itemData, SlotMode mode, out SlottingCondition condition)
     {
@@ -226,4 +243,37 @@ public class BaseSlot : MonoBehaviour
         itemHandlerUI.GetStore().SetFirmwareActive(itemId, false);
         itemHandlerUI.GetStore().SetModuleActive(itemId, false);
     }
+
+    #endregion SYSTEM
+
+    #region POINTER_EVENT_HANDLING
+    void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
+    {
+    }
+    void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
+    {
+    }
+
+    public void HandleItemDrop()
+    {
+        BaseItemUI dragging = ItemHandlerUI.DraggingItem;
+        if (dragging == null) return;
+
+        ItemData data = dragging.inSlot.itemHandlerUI
+            .GetStore()
+            .GetItemById(dragging.GetItemId());
+
+        if (TrySlotItem(dragging, data, SlotMode.USER, dragging.inSlot))
+        {
+            dragging.DragEnd();
+            OnItemSlotted(data.itemId);
+        }
+        else
+        {
+            dragging.DragCancel();
+        }
+
+        ItemHandlerUI.DraggingItem = null;
+    }
+    #endregion
 }
