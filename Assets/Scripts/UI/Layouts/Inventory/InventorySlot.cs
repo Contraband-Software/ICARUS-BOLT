@@ -14,14 +14,14 @@ public class InventorySlot : BaseSlot
     protected override void OnHoverEnter()
     {
         base.OnHoverEnter();
-        BaseElements.FrameColorBlender.TransitionToColor("_HoverColor",
-            InteractiveMatBlender.TransitionDirection.IN);
+        BaseElements.FrameColorBlender.TransitionToColor("Hover",
+            InteractiveColorBlender.TransitionDirection.IN);
     }
 
     protected override void OnHoverExit()
     {
         base.OnHoverExit();
-        BaseElements.FrameColorBlender.TransitionToColor("_DefaultColor",
-            InteractiveMatBlender.TransitionDirection.OUT);
+        BaseElements.FrameColorBlender.TransitionToColor("Default",
+            InteractiveColorBlender.TransitionDirection.OUT);
     }
 }

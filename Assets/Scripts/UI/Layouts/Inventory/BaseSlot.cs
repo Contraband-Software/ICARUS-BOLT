@@ -49,7 +49,7 @@ public class BaseSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     [Serializable]
     public class BaseSlotElements
     {
-        public InteractiveMatBlender FrameColorBlender;
+        public InteractiveColorBlender FrameColorBlender;
     }
     public BaseSlotElements BaseElements;
 
