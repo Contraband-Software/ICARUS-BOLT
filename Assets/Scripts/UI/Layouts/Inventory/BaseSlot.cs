@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine;
+using UnityEngine.Events;
+using Helpers;
+using System;
 
 public class BaseSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
@@ -32,6 +35,23 @@ public class BaseSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     [SerializeField] public Transform containerRoot;
     [SerializeField] public Transform itemFrame;
     public ItemHandlerUI itemHandlerUI { get; private set; }
+
+    #region UI_EVENTS
+    [Serializable]
+    public class UIEvents
+    {
+        public UnityEvent OnHoverEnter = new UnityEvent();
+        public UnityEvent OnHoverExit = new UnityEvent();
+    }
+    public UIEvents UI_Events;
+    #endregion
+
+    [Serializable]
+    public class BaseSlotElements
+    {
+        public InteractiveMatBlender FrameColorBlender;
+    }
+    public BaseSlotElements BaseElements;
 
     public void SetItemHandlerUI(ItemHandlerUI itemHandlerUI) => this.itemHandlerUI = itemHandlerUI;
 
@@ -249,9 +269,13 @@ public class BaseSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     #region POINTER_EVENT_HANDLING
     void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
     {
+        UI_Events.OnHoverEnter?.Invoke();
+        OnHoverEnter();
     }
     void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
     {
+        UI_Events.OnHoverExit?.Invoke(); 
+        OnHoverExit();
     }
 
     public void HandleItemDrop()
@@ -274,6 +298,18 @@ public class BaseSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         }
 
         ItemHandlerUI.DraggingItem = null;
+    }
+    #endregion
+
+    #region UNSERIALIZABLE_ACTIONS
+    protected virtual void OnHoverEnter()
+    {
+
+    }
+
+    protected virtual void OnHoverExit()
+    {
+
     }
     #endregion
 }

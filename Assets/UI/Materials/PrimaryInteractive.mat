@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Primary3
+  m_Name: PrimaryInteractive
   m_Shader: {fileID: 4800000, guid: d82824b010388804cbeb1794e9ee1901, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -98,7 +98,9 @@ Material:
     - _AlphaClip: 0
     - _AlphaToMask: 0
     - _Blend: 0
+    - _BlendFactor: 0
     - _BlendModePreserveSpecular: 1
+    - _BlendValue: 0
     - _BumpScale: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
@@ -138,9 +140,10 @@ Material:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _CurrentColor: {r: 0.86666673, g: 0.5647059, b: 0.34117648, a: 1}
+    - _DefaultColor: {r: 0.86666673, g: 0.5647059, b: 0.34117648, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _HoverColor: {r: 0.9528302, g: 0.9528302, b: 0.9528302, a: 1}
     - _MainColor: {r: 0.86666673, g: 0.5647059, b: 0.34117648, a: 1}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
-    - _TargetColor: {r: 0, g: 0, b: 0, a: 1}
+    - _TargetColor: {r: 0.86666673, g: 0.5647059, b: 0.34117648, a: 1}
   m_BuildTextureStacks: []

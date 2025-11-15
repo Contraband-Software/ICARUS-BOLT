@@ -3,11 +3,11 @@ Shader "UI/Unlit/InteractiveColor"
     Properties
     {
         [PerRendererData] _MainTex ("Sprite Texture", 2D) = "white" {}
-        _MainColor ("Main Color", Color) = (1,1,1,1)
+        _DefaultColor ("Main Color", Color) = (1,1,1,1)
         _HoverColor ("Hover Color", Color) = (1,1,1,1)
         _CurrentColor ("Current Color", Color) = (1,1,1,1)
         _TargetColor ("Target Color", Color) = (1,1,1,1)
-        _LerpFactor ("Lerp Factor", Range(0,1)) = 0
+        _BlendValue ("Blend Value", Range(0,1)) = 0
         
         // UI-specific properties
         _StencilComp ("Stencil Comparison", Float) = 8
@@ -83,7 +83,7 @@ Shader "UI/Unlit/InteractiveColor"
             fixed4 _HoverColor;
             fixed4 _CurrentColor;
             fixed4 _TargetColor;
-            float _LerpFactor;
+            float _BlendValue;
             float4 _ClipRect;
             float4 _TextureSampleAdd;
             
@@ -107,7 +107,7 @@ Shader "UI/Unlit/InteractiveColor"
                 half4 color = (tex2D(_MainTex, i.texcoord) + _TextureSampleAdd);
                 
                 // Blend between current and target colors
-                fixed4 blendedColor = lerp(_CurrentColor, _TargetColor, saturate(_LerpFactor));
+                fixed4 blendedColor = lerp(_CurrentColor, _TargetColor, saturate(_BlendValue));
                 
                 // Apply color blending
                 color *= blendedColor * i.color;

@@ -151,7 +151,7 @@ Material:
     - _Metallic: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.005
-    - _PlayerBendFactor: 0.0000008039507
+    - _PlayerBendFactor: 0.0000004577757
     - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _Scale: 5
@@ -181,7 +181,7 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _PlayerLoc: {r: 33, g: 69.97318, b: 74.380005, a: 0}
-    - _PlayerVel: {r: -1.6700673e-20, g: 0.0000008039507, b: 5.219275e-21, a: 0}
+    - _PlayerVel: {r: -3.258099e-20, g: 0.0000004577757, b: -1.844795e-20, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _TipColor: {r: 0.8773585, g: 0.44281062, b: 0.3517711, a: 1}
     - _WindVelocity: {r: 0.1, g: 0, b: 0.1, a: 0}
