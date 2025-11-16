@@ -16,7 +16,7 @@ Material:
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 3000
+  m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
   m_LockedProperties: _BendDelta
@@ -151,7 +151,7 @@ Material:
     - _Metallic: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.005
-    - _PlayerBendFactor: 0.016019663
+    - _PlayerBendFactor: 0.00000042721527
     - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _Scale: 5
@@ -180,8 +180,8 @@ Material:
     - _BaseColor: {r: 0.4433962, g: 0.29124022, b: 0.24052154, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _PlayerLoc: {r: -44.555454, g: 11.080527, b: -18.782446, a: 0}
-    - _PlayerVel: {r: 0.011168138, g: 0.007511832, b: 0.008687615, a: 0}
+    - _PlayerLoc: {r: -15.073261, g: 11.081049, b: -89.18733, a: 0}
+    - _PlayerVel: {r: 0.0000002029261, g: 0.00000023490762, b: 0.0000002935171, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _TipColor: {r: 0.8773585, g: 0.44281062, b: 0.3517711, a: 1}
     - _WindVelocity: {r: 0.1, g: 0, b: 0.1, a: 0}

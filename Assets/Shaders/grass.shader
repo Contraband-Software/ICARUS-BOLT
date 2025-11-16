@@ -42,6 +42,7 @@ Shader "Unlit/grass"
 
 		_Ambient("Ambient Light",Color) = (0.1, 0.1, 0.1, 1)
 
+
 		Smoothness("Smoothness", Range(0, 1)) = 0.5
 		Normal("Normal Vector", Vector) = (0, 0, 1)
 		View("View Vector", Vector) = (0, 0, -1)
@@ -65,14 +66,14 @@ SubShader
 	Tags
 	{
 	    "RenderType" = "Opaque"
-	    "Queue" = "Geometry" // "Transparent" would be used for transparent objects //opaque?????CHECK THIS
+	    "Queue" = "AlphaTest" // "Transparent" would be used for transparent objects //opaque?????CHECK THIS
 	    "RenderPipeline" = "UniversalPipeline"
 	    "LightMode" = "UniversalForward"
 	}
 
 //		Blend SrcAlpha OneMinusSrcAlpha
 		LOD 100
-		Cull Off
+		Cull Off 
 
 		HLSLINCLUDE
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
@@ -80,10 +81,16 @@ SubShader
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Input.hlsl"
 		
 
-			#pragma multi_compile _ _MAIN_LIGHT_SHADOWS
-			#pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
-			#pragma multi_compile _ _ADDITIONAL_LIGHTS
-			#pragma multi_compile _ _SHADOWS_SOFT
+			#pragma shader_feature _ _MAIN_LIGHT_SHADOWS
+			#pragma shader_feature _ _MAIN_LIGHT_SHADOWS_CASCADE
+			#pragma shader_feature _ _ADDITIONAL_LIGHTS
+			#pragma shader_feature _ _ADDITIONAL_LIGHT_SHADOWS
+			#pragma shader_feature _ _SHADOWS_SOFT
+			#pragma shader_feature _ _SCREEN_SPACE_OCCLUSION // needed?
+			#pragma multi_compile _ LIGHTMAP_ON              // ★ static light-maps
+			#pragma multi_compile _ DIRLIGHTMAP_COMBINED     // ★ directional light-map
+			#pragma multi_compile _ DYNAMICLIGHTMAP_ON       // ★ realtime GI needed?
+			// #pragma multi_compile _ _FORWARD_PLUS
 
 			#define UNITY_PI 3.14159265359f
 			#define UNITY_TWO_PI 6.28318530718f
@@ -156,10 +163,11 @@ SubShader
 			struct VertexInput
 			{
 				float4 vertex  : POSITION;
-				float3 normal  : NORMAL;
-				float4 tangent : TANGENT;
-				float2 uv      : TEXCOORD0;
-				// float2 lightmapUV : TEXCOORD1; // needed?
+				half3 normal  : NORMAL;
+				half4 tangent : TANGENT;
+				half2 uv      : TEXCOORD0;
+				half2 uvLM     : TEXCOORD1;
+				half3 vertexSH   : TEXCOORD5; 
 				float perlin : TEXCOORD3;
 				float mask : TEXCOORD4;
 				float4 color : COLOR;
@@ -167,10 +175,12 @@ SubShader
 
 			struct VertexOutput
 			{
-				float4 vertex  : SV_POSITION;
-				float3 normal  : NORMAL;
-				float4 tangent : TANGENT;
-				float2 uv      : TEXCOORD0;
+				float4 vertex  : POSITION;
+				half3 normal  : NORMAL;
+				half4 tangent : TANGENT;
+				half2 uv      : TEXCOORD0;
+				half2 uvLM     : TEXCOORD1;
+				half3 vertexSH   : TEXCOORD5; 
 				float perlin : TEXCOORD3;
 				float mask : TEXCOORD4;
 				float4 color : COLOR;
@@ -185,12 +195,12 @@ SubShader
 			struct GeomData
 			{
 				float4 pos : SV_POSITION;
-				float2 uv  : TEXCOORD0;
-				float3 worldPos : TEXCOORD1;
-				float3 normal : NORMAL; // [n]???
-				float t : TEXCOORD2;
-				// float2 lightmapUV : TEXCOORD3;
-
+				half2 uv  : TEXCOORD0;
+				half2 uvLM     : TEXCOORD1;
+				float3 worldPos : TEXCOORD2;
+				half3 normal : NORMAL; // [n]???
+				float t : TEXCOORD3;
+				half3 vertexSH   : TEXCOORD5; 
 			};
 
 			struct EdgeConstants{
@@ -262,6 +272,8 @@ SubShader
 				o.normal = v.normal;
 				o.tangent = v.tangent;
 				o.uv = TRANSFORM_TEX(v.uv, _GrassMap);
+				o.uvLM = v.uvLM * unity_LightmapST.xy + unity_LightmapST.zw;
+				o.vertexSH = SampleSHVertex(TransformObjectToWorldNormal(v.normal));
 				o.perlin = v.perlin;
 				o.mask = v.mask;
 				o.color = v.color;
@@ -276,6 +288,8 @@ SubShader
 				o.normal = v.normal;
 				o.tangent = v.tangent;
 				o.uv = v.uv;
+				o.uvLM = v.uvLM;
+				o.vertexSH = SampleSHVertex(TransformObjectToWorldNormal(v.normal));
 				o.perlin = v.perlin;
 				o.mask = v.mask;
 				o.color = v.color;
@@ -289,8 +303,10 @@ SubShader
 				o.vertex = float4(v.vertex.xyz, 1.0f); //check if this makes any sense???
 				o.normal = TransformObjectToWorldNormal(v.normal);
 				o.tangent = v.tangent;
-				o.uv = TRANSFORM_TEX(v.uv, _GrassMap);
+				o.uv = TRANSFORM_TEX(v.uv, _GrassMap);// needed both here and in vert?
 				  // Sample wind map for static variation
+				o.uvLM = v.uvLM * unity_LightmapST.xy + unity_LightmapST.zw; // needed both here and in vert?
+				o.vertexSH = SampleSHVertex(TransformObjectToWorldNormal(v.normal));
 			    float3 worldPos = TransformObjectToWorld(v.vertex.xyz);
 			    float2 windUV = TRANSFORM_TEX(float2(worldPos.x, worldPos.z), _WindMap);
 			    o.perlin = tex2Dlod(_WindMap, float4(windUV*8, 0, 0)).r;
@@ -320,7 +336,7 @@ SubShader
 				float3 edgeCenter = (v0 + v1) * 0.5f;
 				float viewDist = pow(distance(TransformObjectToWorld(edgeCenter), _WorldSpaceCameraPos),_CullFalloff); //rework falloff and grassdistance params
 
-				return min(edgeLength * _ScreenParams.y *(mask-_GrassThreshold) / (_TessellationGrassDistance * viewDist) ,_MaxTessellation);
+				return min(edgeLength * _ScreenParams.y / (_TessellationGrassDistance * viewDist) ,_MaxTessellation)*smoothstep(_GrassThreshold, _GrassThreshold + _GrassFalloff, mask);
 			}
 
 			// Tessellation hull and domain shaders derived from Catlike Coding's tutorial:
@@ -391,6 +407,9 @@ SubShader
 			    v.uv = patch[0].uv * barycentricCoordinates.x + 
 			           patch[1].uv * barycentricCoordinates.y + 
 			           patch[2].uv * barycentricCoordinates.z;
+				v.uvLM = patch[0].uvLM * barycentricCoordinates.x + 
+			           patch[1].uvLM * barycentricCoordinates.y + 
+			           patch[2].uvLM * barycentricCoordinates.z;
 			    
 			    // Interpolate the perlin value
 			    v.perlin = patch[0].perlin * barycentricCoordinates.x + 
@@ -412,7 +431,9 @@ SubShader
 			    o.vertex = float4(v.vertex.xyz, 1.0f);
 			    o.normal = TransformObjectToWorldNormal(v.normal);
 			    o.tangent = v.tangent;
-			    o.uv = TRANSFORM_TEX(v.uv, _GrassMap);
+			    o.uv = TRANSFORM_TEX(v.uv, _GrassMap);// needed here and in geom/vert?
+				o.uvLM = v.uvLM * unity_LightmapST.xy + unity_LightmapST.zw; // needed here and in geom/vert?
+				o.vertexSH = SampleSHVertex(TransformObjectToWorldNormal(v.normal));
 			    o.perlin = v.perlin; // Pass the interpolated perlin value
 				o.mask = v.mask;
 				o.color = v.color;
@@ -424,14 +445,32 @@ SubShader
 			// Geometry functions derived from Roystan's tutorial:
 			// https://roystan.net/articles/grass-shader.html
 
+			            // Hash function that converts 3D input to 1D output
+			            float hash31(float3 p)
+			            {
+			                float h = dot(p, float3(127.1, 311.7, 74.7));
+			                return frac(sin(h)*43758.5453123);
+			            }
+			
+			            // Hash function that converts 3D input to 3D output
+			            float3 hash33(float3 p)
+			            {
+			                float3 h = float3(dot(p, float3(127.1, 311.7, 74.7)),
+			                                dot(p, float3(269.5, 183.3, 246.1)),
+			                                dot(p, float3(419.2, 371.9, 158.2)));
+			                return frac(sin(h)*43758.5453123);
+			            }
+			
 			// This function applies a transformation (during the geometry shader),
 			// converting to clip space in the process.
-			GeomData TransformGeomToClip(float3 pos, float3 offset, float3x3 transformationMatrix, float2 uv, float3 normal,float t)
+			GeomData TransformGeomToClip(float3 pos, float3 offset, float3x3 transformationMatrix, float2 uv,float2 uvLM,float3 vertexSH, float3 normal,float t)
 			{
 				GeomData o;
 
 				o.pos = TransformObjectToHClip(pos + mul(transformationMatrix, offset));
 				o.uv = uv;
+				o.uvLM = uvLM;
+				o.vertexSH = vertexSH;
 				o.worldPos = TransformObjectToWorld(pos + mul(transformationMatrix, offset));
 				// o.normal = TransformObjectToWorldNormal(normalize(mul(transformationMatrix,normal)));
 
@@ -446,10 +485,11 @@ SubShader
 			
 
 			// Updated maxvertexcount: original blade vertices + 1 for the pass-through vertex.
+			
 			[maxvertexcount(BLADE_SEGMENTS * 2 + 1)]
 			void geom(point VertexOutput input[1], inout TriangleStream<GeomData> triStream)
 			{
-			    float3 pos = input[0].vertex.xyz;
+			    float3 pos = input[0].vertex.xyz + hash33(input[0].vertex.xyz)*float3(1,0,1);
 				
 
 			    float grassVisibility = input[0].color.r; //tex2Dlod(_GrassMap, float4(input[0].uv, 0, 0)).r;
@@ -480,7 +520,7 @@ SubShader
 
 			       	float2 windUV = float2(worldPos.x  + (time + sin((time + worldPos.x) * _GustScale ) *_WindTurbulence) * _WindVelocity.x, 
 			                                worldPos.z  + (time + sin((time + worldPos.z) * _GustScale) *_WindTurbulence) * _WindVelocity.z)*_WindMap_ST.xy;
-					double windSample = pow(tex2Dlod(_WindMap, float4(windUV, 0, 0) * 2 - 1).r*2, _WindGustiness)*_WindStrength;
+					double windSample = pow(tex2Dlod(_WindMap, float4(windUV, 0, 0) * 2 - 1).r*2, _WindGustiness)*_WindStrength; // maybe move texture lookup to vertex shader
 
 			        float2 windUVAux = float2(pos.x * _WindMap_ST.x / 4 + (time + sin((time + pointHash) * 64) * 0.0078125) * _WindVelocity.x, //check needed?
 			                                   pos.z * _WindMap_ST.y + (time + sin((time + pointHash) * 64) * 0.0078125) * _WindVelocity.z);
@@ -513,7 +553,8 @@ SubShader
 
 			    	
 			        // Create blade segments by adding two vertices at once.
-			        for (int i = 0; i < BLADE_SEGMENTS; ++i)
+			    	float3 vertexSH = input[0].vertexSH;
+			        [unroll] for (int i = 0; i < BLADE_SEGMENTS; ++i)
 			        {
 			            float t = i / (float)BLADE_SEGMENTS;
 			            float3 offset = float3(width * (1 - t), pow(t, _BladeBendCurve) * forward, height * t);
@@ -528,10 +569,10 @@ SubShader
 						
 			            // Left side vertex
 			            triStream.Append(TransformGeomToClip(pos, float3(offset.x, offset.y, offset.z) * _Scale, 
-			                                                  transformationMatrix, float2(0, t), normalize(normalDir + float3((1-t)+0.4, 0, 0)), windSample));
+			                                                  transformationMatrix, float2(0, t),input[0].uvLM,vertexSH, normalize(normalDir + float3((1-t)+0.4, 0, 0)), windSample));
 			            // Right side vertex (using negative normal for proper back-face lighting)
 			            triStream.Append(TransformGeomToClip(pos, float3(-offset.x, offset.y, offset.z) * _Scale, 
-			                                                  transformationMatrix, float2(1, t), normalize(normalDir + float3(-(1-t)-0.4, 0, 0)), windSample));
+			                                                  transformationMatrix, float2(1, t),input[0].uvLM,vertexSH, normalize(normalDir + float3(-(1-t)-0.4, 0, 0)), windSample));
 			        }
 
 			        // Tip vertex
@@ -542,7 +583,7 @@ SubShader
 			        float3 tipNormal = normalize(cross(tangentWidth_tip, tangentAlongBlade_tip));//lerp(normalize(cross(tangentWidth_tip, tangentAlongBlade_tip)),worldspaceUp,distanceToCamera*0.01)
 
 			        triStream.Append(TransformGeomToClip(pos, float3(0, forward, height) * _Scale, 
-			                                              tipTransformationMatrix, float2(0.5, 1),tipNormal , windSample));
+			                                              tipTransformationMatrix, float2(0.5, 1),input[0].uvLM,vertexSH,tipNormal , windSample));
 
 			        triStream.RestartStrip();
 			    }
@@ -558,33 +599,55 @@ SubShader
 
             HLSLPROGRAM
 				#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Input.hlsl"
+				#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/GlobalIllumination.hlsl"
+				
 				#pragma require geometry
 				#pragma require tessellation tessHW
+				#pragma multi_compile_fog 
+				// #pragma multi_compile _ _FORWARD_PLUS
 
-				//#pragma vertex vert
 				#pragma vertex geomVert
 				#pragma hull hull
 				#pragma domain domain
 				#pragma geometry geom
 				#pragma fragment frag
+				void Applyfog(inout float4 color, float3 positionWS)
+				{
+				    float4 inColor = color;
+				  
+				    #if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
+				    float viewZ = -TransformWorldToView(positionWS).z;
+				    float nearZ0ToFarZ = max(viewZ - _ProjectionParams.y, 0);
+				    float density = 1.0f - ComputeFogIntensity(ComputeFogFactorZ0ToFar(nearZ0ToFarZ));
+
+				    color = lerp(color, unity_FogColor,  density);
+
+				    #else
+				    color = color;
+				    #endif
+				}
 				
 				float edgeFactor(float2 uv)
 				{
 					// Compute screen-space derivatives of the UV coordinates
 					float2 dx = ddx(uv);
 					float2 dy = ddy(uv);
-
-					// Calculate the length of the gradient vector, which indicates distance from edges
 					float edgeDistance = length(dx) + length(dy);
-
-					// Return a factor inversely related to edge distance (smaller for edges, larger for center)
 					return saturate(0.1 / edgeDistance);
 				}
+				inline float quantize(float x)
+				{
+					return floor(x*ShadeLevels)/ShadeLevels;
+				}
+				inline float quantize(float3 x)
+				{
+					return floor(length(x)*ShadeLevels)/ShadeLevels;
+				}				
+
 				float3 lightContribution(Light l, SurfaceVariables s, float dist, float t, float specularModifier,float diffuseModifier) {
-					// Diffuse lighting calculation
 					float diffuseFront = max(0, dot(s.normal, l.direction)); 
 					float diffuseBack = max(0, dot(-s.normal, l.direction));
-					float attenuation = l.distanceAttenuation * l.shadowAttenuation;
+					float attenuation = l.distanceAttenuation*l.shadowAttenuation;
 					// this stuff here with pow(..,diffuseModifier) is probably not the right way
 					float3 diffuse = l.color.rgb * pow(diffuseFront,diffuseModifier) + lerp(l.color.rgb, _BaseColor, _ScatterTintStrength) * pow(diffuseBack,diffuseModifier) * _ScatterStrength;
 
@@ -602,14 +665,9 @@ SubShader
 					return lerp(lighting, l.color.rgb + min(specular,0.2), min(max(dist,1-t), 1))* attenuation;
 				}
 
-				
-
-
-				// The lighting sections of the frag shader taken from this helpful post by Ben Golus:
-				// https://forum.unity.com/threads/water-shader-graph-transparency-and-shadows-universal-render-pipeline-order.748142/#post-5518747
 				float4 frag(GeomData i) : SV_Target
 				{
-					float distanceFromCamera = LinearEyeDepth(i.pos.z / i.pos.w, _ZBufferParams)/8192 +0.3;
+					float distanceFromCamera = LinearEyeDepth(i.pos.z / i.pos.w, _ZBufferParams)/(pow(2,13)) +0.3;
 					EdgeConstants ec;
 					ec.edgeDiffuse = EdgeDiffuse;
 					ec.diffuseOffset = DiffuseOffset;
@@ -622,7 +680,6 @@ SubShader
 
 					SurfaceVariables s;
 					s.view = GetWorldSpaceNormalizeViewDir(i.worldPos);
-					// float3 smoothedNormal = 
 
 					if (dot(s.view, i.normal) < 0) //CHECK THIS IS RIGHT!!!!
 					{
@@ -632,7 +689,6 @@ SubShader
 						s.normal = lerp(i.normal,normalize(mul(unity_ObjectToWorld, float4(0, 1, 0, 0)).xyz),0);//min(distanceFromCamera,1.0)
 					}
 					
-						
 					s.smoothness = Smoothness;
 					s.shininess = exp2(10 * Smoothness + 1);
 					s.rimThreshold = RimThreshold;
@@ -642,59 +698,76 @@ SubShader
 					s.tintPower = TintPower;
 					s.ec = ec;
 		
-					// Main directional light contribution
 					VertexPositionInputs vertexInput = (VertexPositionInputs) 0;
 					vertexInput.positionWS = i.worldPos;
 
 					float4 shadowCoord = GetShadowCoord(vertexInput);
-					half shadowAttenuation = saturate(MainLightRealtimeShadow(shadowCoord) + 0.25f);
-					float3 shadowColor = lerp(0.0f, 1.0f, shadowAttenuation);
 					Light light = GetMainLight(shadowCoord);
-					float3 diffuse = LightingLambert(light.color, light.direction, i.normal);
-					//float3 lighting = _BaseColor.rgb * diffuse * shadowColor;
 					float3 baseColor = lerp((lerp(_BaseColor, _TipColor, i.uv.y) - i.t/64),_BaseColor,min(distanceFromCamera,1.0));
 					
-					float3 lighting = lightContribution(light,s,distanceFromCamera,i.uv.y,0.25,0.5 ); //*SampleAmbientOcclusion()
+					float3 lighting = lightContribution(light,s,distanceFromCamera,i.uv.y,0.25,0.5); //*SampleAmbientOcclusion()
 					float3 litColor = baseColor*lighting;
-					// float intensity = floor(length(litColor)*s.shadeLevels)/s.shadeLevels;
 
 					float3 finalLight = light.color;
-					
 					
 					 int pixelLightCount = GetAdditionalLightsCount();
 					 for (int lightIndex = 0; lightIndex < pixelLightCount; ++lightIndex)
 					 {
-					 	light = GetAdditionalLight(lightIndex, i.worldPos, 1);
+					 	Light light = GetAdditionalLight(lightIndex, i.worldPos,shadowCoord);
 					 	lighting = lightContribution(light,s,distanceFromCamera,i.uv.y,2,1);
 					 	litColor += baseColor*lighting;
-					 	// intensity = floor(length(litColor)*s.shadeLevels)/s.shadeLevels;
 					 	finalLight += light.color;
 					 }
-
-					float intensity = floor(length(litColor)*s.shadeLevels)/s.shadeLevels;
-					float3 finalColor = ((floor(length(litColor)*s.shadeLevels)/s.shadeLevels))*litColor + _Ambient*baseColor*lerp(1 + 1*floor(max(dot(s.normal,float3(0,1,0)),0)*s.shadeLevels*1.4)/s.shadeLevels,1,min(max(distanceFromCamera,1-i.uv.y), 1)); //floor(max(dot(s.normal,float3(0,1,0)),0.5)*s.shadeLevels)/s.shadeLevels
-					// float3 finalColor = baseColor *(finalLight + _Ambient);
-		
-					 // Mix with base and tip colors for a color gradient across the blade
-					// color *= lerp(_BaseColor, _TipColor, i.uv.y);
-					 // Apply lighting
+					float2 screenUV = GetNormalizedScreenSpaceUV(i.pos.xy);
+					float ao = 1-SampleAmbientOcclusion(screenUV);
+					ao = pow(ao,2);
+					ao = 1-min(ao,1);
+					float3 finalColor = quantize(litColor)*litColor + quantize(ao)*_Ambient*baseColor*lerp(1 + floor(max(dot(s.normal,float3(0,1,0)),0)*s.shadeLevels*1.4)/s.shadeLevels,1,min(max(distanceFromCamera,1-i.uv.y), 1)); //floor(max(dot(s.normal,float3(0,1,0)),0.5)*s.shadeLevels)/s.shadeLevels
 					
-					
-					//color = floor(color*s.shadeLevels)/ s.shadeLevels;
-
+					float3 gi = SAMPLE_GI(i.uvLM,float3(0,0,0),s.normal);
+					finalColor*=pow(gi,0.25);
 					float4 output = float4(finalColor,1); //float4(color,min((1-i.t)*8,1));
+					Applyfog(output,i.worldPos);
 					return output;
-					//return float4(i.t, i.t, i.t, 1.0f);
 				}
 			ENDHLSL
 		}
+		Pass {
+			Name"ShadowCaster"
+			Tags
+			{"LightMode"="ShadowCaster"
+			}
+
+			ZWrite On
+
+			ZTest LEqual
+
+			HLSLPROGRAM
+				#pragma vertex vert
+
+				#pragma fragment ShadowPassFragment
+
+				// Material Keywords
+				#pragma shader_feature _ALPHATEST_ON
+				#pragma shader_feature _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
+
+				// GPU Instancing
+				#pragma multi_compile_instancing
+				// (Note, this doesn't support instancing for properties though. Same as URP/Lit)
+				#pragma multi_compile _ DOTS_INSTANCING_ON
+				// (This was handled by LitInput.hlsl. I don't use DOTS so haven't bothered to support it)
+				
+			#include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
+			ENDHLSL
+		}
+
 //		Pass {
 //			Name"ShadowCaster"
 //			Tags
 //			{"LightMode"="ShadowCaster"
 //			}
 //
-//			ZWrite On
+//			ZWrite On    
 //
 //			ZTest LEqual
 //
@@ -724,63 +797,29 @@ SubShader
 //			#include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
 //			ENDHLSL
 //		}
+		
+		Pass                           // depth-normals pass for SSAO
+		{
+		    Name "DepthNormals"
+		    Tags { "LightMode" = "DepthNormals" }
 
-/*
-		Pass {
-			Name "DepthNormals"
-			Tags { "LightMode"="DepthNormals" }
-
-			ZWrite On
-			ZTest LEqual
-
-			HLSLPROGRAM
-			#pragma require geometry
-	 		#pragma require tessellation tessHW
-
-			#pragma vertex geomVert
+		    HLSLPROGRAM
+		    #pragma vertex geomVert
 			#pragma hull hull
 			#pragma domain domain
 			#pragma geometry geom
+		    #pragma fragment fragDN
 
-			#pragma fragment DepthNormalsFragment
+		    #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
-			// Material Keywords
-			#pragma shader_feature_local _NORMALMAP
-			//#pragma shader_feature_local _PARALLAXMAP
-			//#pragma shader_feature_local _ _DETAIL_MULX2 _DETAIL_SCALED
-			#pragma shader_feature_local_fragment _ALPHATEST_ON
-			#pragma shader_feature_local_fragment _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
+		    struct Attributes   { float4 positionOS : POSITION; float3 normalOS : NORMAL; };
+		    struct Varyings     { float4 positionCS : SV_POSITION; float3 normalWS : TEXCOORD0;float t : TEXCOORD2; };
 
-			// GPU Instancing
-			#pragma multi_compile_instancing
-			//#pragma multi_compile _ DOTS_INSTANCING_ON
-
-			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/CommonMaterial.hlsl"
-			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/SurfaceInput.hlsl"
-			#include "Packages/com.unity.render-pipelines.universal/Shaders/DepthNormalsPass.hlsl"
-
-			// Note if we do any vertex displacement, we'll need to change the vertex function. e.g. :
-
-			#pragma vertex DisplacedDepthOnlyVertex (instead of DepthOnlyVertex above)
-
-			Varyings DisplacedDepthOnlyVertex(Attributes input) {
-				Varyings output = (Varyings)0;
-				UNITY_SETUP_INSTANCE_ID(input);
-				UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
-
-				// Example Displacement
-				input.positionOS += float4(0, _SinTime.y, 0, 0);
-
-				output.uv = TRANSFORM_TEX(input.texcoord, _BaseMap);
-				output.positionCS = TransformObjectToHClip(input.position.xyz);
-				VertexNormalInputs normalInput = GetVertexNormalInputs(input.normal, input.tangentOS);
-				output.normalWS = NormalizeNormalPerVertex(normalInput.normalWS);
-				return output;
-			}
-
-			
-		 	ENDHLSL
+		    float4 fragDN (Varyings i) : SV_Target
+		    {
+		        return float4(lerp(i.normalWS,float3(0,1,0),i.t), 1);
+		    }
+		    ENDHLSL
 		}
-*/
     }
 }
